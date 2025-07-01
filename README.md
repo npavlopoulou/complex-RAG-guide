@@ -15,7 +15,7 @@ Building a production-ready RAG system involves a series of thoughtful and itera
 
 Using **LangChain**, **LangGraph**, and **RAGAS** (Evaluation), simulating real-world challenges and showcasing practical solutions that developers face while building RAG bots.
 
-This is an created on top of the version of [nirDiamant](https://github.com/NirDiamant) guide. Thanks to him for the foundational work.
+This is created on top of the version of [nirDiamant](https://github.com/NirDiamant) guide. Thanks to him for the foundational work.
 
 <!-- omit in toc -->
 # Table of Contents
