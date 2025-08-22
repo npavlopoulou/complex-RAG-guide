@@ -10,3 +10,7 @@ PyPDF2
 pylcs
 pypdf
 langchain_openai
+ipython
+jupyter
+databricks-vectorsearch
+databricks-sdk

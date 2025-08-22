@@ -1,0 +1,7 @@
+.env
+.databrickscfg
+.idea
+venv
+__pycache__
+
+.databricks

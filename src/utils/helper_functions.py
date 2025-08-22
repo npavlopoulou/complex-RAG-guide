@@ -17,6 +17,8 @@ import pandas as pd
 import dill
 from langchain.docstore.document import Document
 
+from src.configuration.constants import Constants
+
 
 # =============================================================================
 # TEXT PROCESSING FUNCTIONS
@@ -36,22 +38,6 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
     encoding = tiktoken.encoding_for_model(encoding_name)
     num_tokens = len(encoding.encode(string))
     return num_tokens
-
-
-def replace_t_with_space(list_of_documents):
-    """
-    Replaces all tab characters ('\t') with spaces in the page content of each document.
-
-    Args:
-        list_of_documents (list): A list of document objects, each with a 'page_content' attribute.
-
-    Returns:
-        list: The modified list of documents with tab characters replaced by spaces.
-    """
-    for doc in list_of_documents:
-        doc.page_content = doc.page_content.replace('\t', ' ')
-    return list_of_documents
-
 
 def replace_double_lines_with_one_line(text):
     """
@@ -92,71 +78,6 @@ def text_wrap(text, width=120):
         str: The wrapped text.
     """
     return textwrap.fill(text, width=width)
-
-
-# =============================================================================
-# PDF PROCESSING FUNCTIONS
-# =============================================================================
-
-def split_into_chapters(book_path):
-    """
-    Splits a PDF book into chapters based on chapter title patterns.
-
-    Args:
-        book_path (str): The path to the PDF book file.
-
-    Returns:
-        list: A list of Document objects, each representing a chapter with its 
-              text content and chapter number metadata.
-    """
-    with open(book_path, 'rb') as pdf_file:
-        pdf_reader = PyPDF2.PdfReader(pdf_file)
-        documents = pdf_reader.pages
-
-        # Concatenate text from all pages
-        text = " ".join([doc.extract_text() for doc in documents])
-
-        # Split text into chapters based on chapter title pattern
-        chapters = re.split(r'(CHAPTER\s[A-Z]+(?:\s[A-Z]+)*)', text)
-
-        # Create Document objects with chapter metadata
-        chapter_docs = []
-        chapter_num = 1
-        for i in range(1, len(chapters), 2):
-            chapter_text = chapters[i] + chapters[i + 1]  # Combine title and content
-            doc = Document(page_content=chapter_text, metadata={"chapter": chapter_num})
-            chapter_docs.append(doc)
-            chapter_num += 1
-
-    return chapter_docs
-
-
-def extract_book_quotes_as_documents(documents, min_length=50):
-    """
-    Extracts quotes from documents and returns them as separate Document objects.
-
-    Args:
-        documents (list): List of Document objects to extract quotes from.
-        min_length (int, optional): Minimum length of quotes to extract. Defaults to 50.
-
-    Returns:
-        list: List of Document objects containing extracted quotes.
-    """
-    quotes_as_documents = []
-    # Pattern for quotes longer than min_length characters, including line breaks
-    quote_pattern_longer_than_min_length = re.compile(rf'"(.{{{min_length},}}?)"', re.DOTALL)
-
-    for doc in documents:
-        content = doc.page_content
-        content = content.replace('\n', ' ')
-        found_quotes = quote_pattern_longer_than_min_length.findall(content)
-        
-        for quote in found_quotes:
-            quote_doc = Document(page_content=quote)
-            quotes_as_documents.append(quote_doc)
-    
-    return quotes_as_documents
-
 
 # =============================================================================
 # SIMILARITY AND ANALYSIS FUNCTIONS
